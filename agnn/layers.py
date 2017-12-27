@@ -20,15 +20,18 @@ class GraphAttentionLayer(nn.Module):
         #     `when torch.norm returned 0.0, the gradient was NaN.
         #     We now use the subgradient at 0.0, so the gradient is 0.0.`
         norm2 = torch.norm(x, 2, 1).view(-1, 1)
-        # add a minor constant to denominator to prevent division by zero eror
+        
+        # add a minor constant (1e-7) to denominator to prevent division by zero error
         cos = self.beta * torch.div(torch.mm(x, x.t()), torch.mm(norm2, norm2.t()) + 1e-7)
 
-        # neighborhood masking
+        # neighborhood masking (inspired by this repo: https://github.com/danielegrattarola/keras-gat)
         mask = (1. - adj) * -1e9
         masked = cos + mask
-
+        
+        # propagation matrix
         P = F.softmax(masked, dim=1)
-
+        
+        # attention-guided propagation
         output = torch.mm(P, x)
         return output
 
