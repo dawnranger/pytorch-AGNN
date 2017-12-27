@@ -8,6 +8,7 @@ This repo attempts to reproduce the AGNN model described in [Attention-based Gra
 * Python 2.7
 
 ## Usage
+```python train.py```
 
 ## Acknowledgment
 This repo borrows plenty of code from [this repo by Thomas Kipf](https://github.com/tkipf/pygcn).
