@@ -43,9 +43,9 @@ def load_data(path="../data/cora/", dataset="cora"):
         raise Exception("dataset not defined!")
     # build symmetric adjacency matrix
     adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
-
+    # row-normalize input feature vectors
     features = normalize(features)
-    # adj = normalize(adj + sp.eye(adj.shape[0]))
+    # A + I
     adj = adj + sp.eye(adj.shape[0])
 
     idx_train = range(140)

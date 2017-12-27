@@ -24,16 +24,7 @@ def train():
 
         loss_train = F.nll_loss(output[idx_train], labels[idx_train])
         acc_train = accuracy(output[idx_train], labels[idx_train])
-
         loss_train.backward()
-
-        # params = model.parameters()
-        # params.next()
-        # print(params.next().grad.data)
-        # print(params.next().grad.data)
-        # if epoch == 2:
-        #     exit()
-
         optimizer.step()
 
         if not args.fastmode:

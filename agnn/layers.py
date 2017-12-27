@@ -1,6 +1,3 @@
-from __future__ import division
-from __future__ import print_function
-
 import torch
 import torch.nn as nn
 from torch.nn.parameter import Parameter
@@ -12,26 +9,21 @@ class GraphAttentionLayer(nn.Module):
 
     def __init__(self, requires_grad=True):
         super(GraphAttentionLayer, self).__init__()
-        # unifrom initialization
         if requires_grad:
+            # unifrom initialization
             self.beta = Parameter(torch.Tensor(1).uniform_(0, 1), requires_grad=requires_grad)
         else:
             self.beta = Variable(torch.zeros(1), requires_grad=requires_grad)
 
     def forward(self, x, adj):
-        #####################################
-        # BUG to befixed:
-        # some rows of x  are all zeros(because of dropout/initial weight)
-        #####################################
-        # get rid of divide zeros error
-        # print(self.beta.data)
-        epsilon = 1e-7
+        # NaN grad bug fixed at pytorch 0.3. Release note:
+        #     `when torch.norm returned 0.0, the gradient was NaN.
+        #     We now use the subgradient at 0.0, so the gradient is 0.0.`
         norm2 = torch.norm(x, 2, 1).view(-1, 1)
-        # print(norm2.size())
-        cos = self.beta * torch.div(torch.mm(x, x.t()), torch.mm(norm2, norm2.t()) + epsilon)
-        # cos = self.beta * torch.mm(x, x.t())
+        # add a minor constant to denominator to prevent division by zero eror
+        cos = self.beta * torch.div(torch.mm(x, x.t()), torch.mm(norm2, norm2.t()) + 1e-7)
 
-        # neighborhood
+        # neighborhood masking
         mask = (1. - adj) * -1e9
         masked = cos + mask
 
@@ -47,13 +39,12 @@ class GraphAttentionLayer(nn.Module):
 class LinearLayer(nn.Module):
     def __init__(self, in_features, out_features, initializer=nn.init.xavier_uniform):
         super(LinearLayer, self).__init__()
-
         self.in_features = in_features
         self.out_features = out_features
         self.weight = Parameter(initializer(torch.Tensor(in_features, out_features)))
 
     def forward(self, input):
-        # return self._backend.Linear()(input, self.weight, self.bias)
+        # no bias
         return torch.mm(input, self.weight)
 
     def __repr__(self):
