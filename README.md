@@ -1,2 +1,8 @@
-# pytorch-AGNN
-Pytorch implementation of the Attention-based Graph Neural Network model  (2017, https://openreview.net/pdf?id=rJg4YGWRb)
+Attention-based Graph Neural Network in Pytorch(AGNN)
+
+
+====
+
+This repo attempts to reproduce the AGNN model described in [Attention-based Graph Neural Network for semi-supervised learning](https://openreview.net/pdf?id=rJg4YGWRb)
+
+
