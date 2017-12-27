@@ -11,7 +11,7 @@ import torch.optim as optim
 from torch.autograd import Variable
 
 from utils import load_data, accuracy
-from layers import AGNN
+from model import AGNN
 
 
 def train():

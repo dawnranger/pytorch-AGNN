@@ -11,7 +11,8 @@ class GraphAttentionLayer(nn.Module):
         super(GraphAttentionLayer, self).__init__()
         if requires_grad:
             # unifrom initialization
-            self.beta = Parameter(torch.Tensor(1).uniform_(0, 1), requires_grad=requires_grad)
+            self.beta = Parameter(torch.Tensor(1).uniform_(
+                0, 1), requires_grad=requires_grad)
         else:
             self.beta = Variable(torch.zeros(1), requires_grad=requires_grad)
 
@@ -20,17 +21,20 @@ class GraphAttentionLayer(nn.Module):
         #     `when torch.norm returned 0.0, the gradient was NaN.
         #     We now use the subgradient at 0.0, so the gradient is 0.0.`
         norm2 = torch.norm(x, 2, 1).view(-1, 1)
-        
-        # add a minor constant (1e-7) to denominator to prevent division by zero error
-        cos = self.beta * torch.div(torch.mm(x, x.t()), torch.mm(norm2, norm2.t()) + 1e-7)
 
-        # neighborhood masking (inspired by this repo: https://github.com/danielegrattarola/keras-gat)
+        # add a minor constant (1e-7) to denominator to prevent division by
+        # zero error
+        cos = self.beta * \
+            torch.div(torch.mm(x, x.t()), torch.mm(norm2, norm2.t()) + 1e-7)
+
+        # neighborhood masking (inspired by this repo:
+        # https://github.com/danielegrattarola/keras-gat)
         mask = (1. - adj) * -1e9
         masked = cos + mask
-        
+
         # propagation matrix
         P = F.softmax(masked, dim=1)
-        
+
         # attention-guided propagation
         output = torch.mm(P, x)
         return output
@@ -40,11 +44,13 @@ class GraphAttentionLayer(nn.Module):
 
 
 class LinearLayer(nn.Module):
+
     def __init__(self, in_features, out_features, initializer=nn.init.xavier_uniform):
         super(LinearLayer, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
-        self.weight = Parameter(initializer(torch.Tensor(in_features, out_features)))
+        self.weight = Parameter(initializer(
+            torch.Tensor(in_features, out_features)))
 
     def forward(self, input):
         # no bias

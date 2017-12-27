@@ -3,9 +3,11 @@ import scipy.sparse as sp
 import torch
 import networkx as nx
 
+
 """
 All functions are borrowed from https://github.com/tkipf/pygcn
 """
+
 
 def encode_onehot(labels):
     classes = set(labels)
@@ -23,7 +25,8 @@ def load_data(path="../data/cora/", dataset="cora"):
     if dataset == "cora":
         idx_features_labels = np.genfromtxt("{}{}.content".format(path, dataset),
                                             dtype=np.dtype(str))
-        features = sp.csr_matrix(idx_features_labels[:, 1:-1], dtype=np.float32)
+        features = sp.csr_matrix(
+            idx_features_labels[:, 1:-1], dtype=np.float32)
         labels = encode_onehot(idx_features_labels[:, -1])
 
         # build graph
@@ -38,7 +41,8 @@ def load_data(path="../data/cora/", dataset="cora"):
                             dtype=np.float32)
     elif dataset == "karate_club":
         g = nx.karate_club_graph()
-        features = sp.csr_matrix(np.identity(g.number_of_nodes()), dtype=np.float32)
+        features = sp.csr_matrix(np.identity(
+            g.number_of_nodes()), dtype=np.float32)
         labels = map(lambda x: x.get('club'), g.node.values())
         labels = encode_onehot(labels).astype(np.float32)
         adj = nx.adj_matrix(g).astype(np.float32)
@@ -48,7 +52,7 @@ def load_data(path="../data/cora/", dataset="cora"):
     adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
     # row-normalize input feature vectors
     features = normalize(features)
-    
+
     # add self-loop
     adj = adj + sp.eye(adj.shape[0])
 
