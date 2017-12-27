@@ -3,6 +3,9 @@ import scipy.sparse as sp
 import torch
 import networkx as nx
 
+"""
+All functions are borrowed from https://github.com/tkipf/pygcn
+"""
 
 def encode_onehot(labels):
     classes = set(labels)
@@ -45,7 +48,8 @@ def load_data(path="../data/cora/", dataset="cora"):
     adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
     # row-normalize input feature vectors
     features = normalize(features)
-    # A + I
+    
+    # add self-loop
     adj = adj + sp.eye(adj.shape[0])
 
     idx_train = range(140)
